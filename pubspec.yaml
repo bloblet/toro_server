@@ -1,0 +1,22 @@
+name: toro_server
+description: Backend server for Toro
+version: 0.0.1
+author: piesquared|GreedyVagabond
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  aqueduct: 3.3.0+1
+  hive: ^1.4.1+1
+  json_annotation: ^3.0.1
+  uuid: ^2.1.0
+
+  meta: ^1.1.8
+
+dev_dependencies:
+  test: ^1.0.0
+  aqueduct_test: ^1.0.0
+  hive_generator: ^0.7.0+2
+  build_runner: ^1.10.0
+  json_serializable: ^3.2.0
