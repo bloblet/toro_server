@@ -27,12 +27,15 @@ class UserRouter extends Controller implements SubRouter {
   }
 
   FutureOr<RequestOrResponse> create(Request request) async {
+    if (request.body.contentType != ContentType.json || request.body.isEmpty) {
+      return Response.badRequest();
+    }
     final body = await request.body.decode<Map>();
 
     if (body['username'] == null || (body['username'] as String).length > 32) {
       return Response.badRequest();
     }
-    
+
     final id = _uuidGenerator.v4();
     final users = HiveUtils.users;
 
@@ -42,7 +45,7 @@ class UserRouter extends Controller implements SubRouter {
       ..stocks = []
       ..token = Randomizer.next()
       ..watchedStocks = []
-      ..username = body['username'];
+      ..username = body['username'] as String;
 
     unawaited(users.put(id, user));
 
