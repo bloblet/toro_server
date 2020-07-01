@@ -52,6 +52,34 @@ class UserRouter extends Controller implements SubRouter {
     return Response.created(id, body: user.toJson());
   }
 
+  FutureOr<RequestOrResponse> put(Request request) async {
+    final id = request.path.variables['id'];
+    final token = request.raw.headers.value('Token');
+
+    if (id == null) {
+      return Response.badRequest();
+    }
+    final user = await HiveUtils.users.get(id);
+
+    if (user == null) {
+      return Response.notFound();
+    }
+
+    if (user.token != token) {
+      return Response.unauthorized();
+    }
+
+    if (request.body.isEmpty) {
+      return Response.badRequest();
+    }
+    final body = await request.body.decode<Map>();
+
+    if (body.containsKey('username')) user.username = body['username'] as String;
+    unawaited(user.save());
+
+    return Response.ok(user.toJson());
+  }
+
   FutureOr<RequestOrResponse> get(Request request) async {
     final id = request.path.variables['id'];
     final token = request.raw.headers.value('Token');
@@ -77,8 +105,10 @@ class UserRouter extends Controller implements SubRouter {
         break;
       case 'GET':
         return get(request);
+      case 'PUT':
+        return put(request);
       default:
-        return Response.notFound();
+        return Response(418, {}, {'short': 'stout'});
     }
   }
 }
