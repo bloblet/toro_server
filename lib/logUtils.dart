@@ -1,13 +1,21 @@
 import 'package:aqueduct/aqueduct.dart';
 
-void info(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.info(message, error, stackTrace);
-void warning(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.warning(message, error, stackTrace);
-void shout(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.shout(message, error, stackTrace);
-void severe(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.severe(message, error, stackTrace);
-void config(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.config(message, error, stackTrace);
-void fine(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.fine(message, error, stackTrace);
-void finer(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.finer(message, error, stackTrace);
-void finest(dynamic message, [Object error, StackTrace stackTrace]) => Logger.root.finest(message, error, stackTrace);
+void info(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.info(message, error, stackTrace);
+void warning(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.warning(message, error, stackTrace);
+void shout(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.shout(message, error, stackTrace);
+void severe(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.severe(message, error, stackTrace);
+void config(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.config(message, error, stackTrace);
+void fine(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.fine(message, error, stackTrace);
+void finer(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.finer(message, error, stackTrace);
+void finest(dynamic message, [Object error, StackTrace stackTrace]) =>
+    Logger.root.finest(message, error, stackTrace);
 
 const black = '\u001b[30m';
 const red = '\u001b[31m';

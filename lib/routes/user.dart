@@ -11,12 +11,12 @@ class Randomizer {
   static String next([int length = 32]) {
     var values = List<int>.generate(length, (i) => _random.nextInt(256));
 
-    return base64.encode(values);
+    return const Base64Encoder.urlSafe().convert(values);
   }
 }
 
 class UserRouter extends Controller implements SubRouter {
-  final uuidGenerator = Uuid(options: {'grng': UuidUtil.cryptoRNG});
+  final _uuidGenerator = Uuid();
 
   @override
   void setup(Router router) {
@@ -27,11 +27,9 @@ class UserRouter extends Controller implements SubRouter {
   }
 
   FutureOr<RequestOrResponse> create(Request request) async {
-    assert(request.method == 'POST');
-
+    final id = _uuidGenerator.v4();
     final users = HiveUtils.users;
 
-    final id = uuidGenerator.v4();
     final user = User()
       ..balance = 25000
       ..id = id
@@ -44,12 +42,31 @@ class UserRouter extends Controller implements SubRouter {
     return Response.created(id, body: user.toJson());
   }
 
+  FutureOr<RequestOrResponse> get(Request request) async {
+    final id = request.path.variables['id'];
+    final token = request.raw.headers.value('Token');
+
+    if (id == null) {
+      return Response.badRequest();
+    }
+    final users = HiveUtils.users;
+    final user = await users.get(id);
+
+    if (user == null) {
+      return Response.notFound();
+    }
+
+    return Response.ok(user.toJson()..removeWhere((key, value) => (key == 'token' || key == 'email') && token != user.token));
+  }
+
   @override
   FutureOr<RequestOrResponse> handle(Request request) {
     switch (request.method) {
       case 'POST':
         return create(request);
         break;
+      case 'GET':
+        return get(request);
       default:
         return Response.notFound();
     }
