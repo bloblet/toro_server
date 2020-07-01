@@ -12,7 +12,8 @@ class User extends HiveObject {
   String token;
 
   @HiveField(2)
-  List<Stock> stocks;
+  //  Symbol, Quantity
+  Map<String, int> stocks;
 
   @HiveField(3)
   List<String> watchedStocks;
@@ -24,8 +25,11 @@ class User extends HiveObject {
   @HiveField(5)
   String email; // OPTIONAL
 
-  @HiveField(5)
+  @HiveField(6)
   String username;
-  
+
+  @HiveField(7)
+  Map<DateTime, PortfolioChangeEvent> portfolioChanges;
+
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }

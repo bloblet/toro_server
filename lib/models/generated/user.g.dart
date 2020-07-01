@@ -19,7 +19,7 @@ class UserAdapter extends TypeAdapter<User> {
     return User()
       ..id = fields[0] as String
       ..token = fields[1] as String
-      ..stocks = (fields[2] as List)?.cast<Stock>()
+      ..stocks = (fields[2] as List)?.cast<String>()
       ..watchedStocks = (fields[3] as List)?.cast<String>()
       ..balance = fields[4] as double
       ..email = fields[5] as String
@@ -55,10 +55,8 @@ User _$UserFromJson(Map<String, dynamic> json) {
   return User()
     ..id = json['id'] as String
     ..token = json['token'] as String
-    ..stocks = (json['stocks'] as List)
-        ?.map(
-            (e) => e == null ? null : Stock.fromJson(e as Map<String, dynamic>))
-        ?.toList()
+    ..stocks =
+        (json['stocks'] as List)?.map((e) => e as String)?.toList()
     ..watchedStocks =
         (json['watchedStocks'] as List)?.map((e) => e as String)?.toList()
     ..balance = (json['balance'] as num).toDouble()

@@ -1,7 +1,7 @@
 import 'dart:math';
 
+import '../models/routerTemplate.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
 
 import '../toro_server.dart';
 
@@ -15,7 +15,7 @@ class Randomizer {
   }
 }
 
-class UserRouter extends Controller implements SubRouter {
+class UserRouter extends RouterTemplate implements SubRouter {
   final _uuidGenerator = Uuid();
 
   @override
@@ -26,7 +26,7 @@ class UserRouter extends Controller implements SubRouter {
         .link(() => this);
   }
 
-  FutureOr<RequestOrResponse> create(Request request) async {
+  FutureOr<RequestOrResponse> post(Request request) async {
     if (request.body.isEmpty) {
       return Response.badRequest();
     }
@@ -42,7 +42,8 @@ class UserRouter extends Controller implements SubRouter {
     final user = User()
       ..balance = 25000
       ..id = id
-      ..stocks = []
+      ..stocks = {}
+      ..portfolioChanges = {}
       ..token = Randomizer.next()
       ..watchedStocks = []
       ..username = body['username'] as String;
@@ -74,7 +75,9 @@ class UserRouter extends Controller implements SubRouter {
     }
     final body = await request.body.decode<Map>();
 
-    if (body.containsKey('username')) user.username = body['username'] as String;
+    if (body.containsKey('username'))
+      user.username = body['username'] as String;
+
     unawaited(user.save());
 
     return Response.ok(user.toJson());
@@ -97,18 +100,25 @@ class UserRouter extends Controller implements SubRouter {
     return Response.ok(user.toJson()..removeWhere((key, value) => (key == 'token' || key == 'email') && token != user.token));
   }
 
-  @override
-  FutureOr<RequestOrResponse> handle(Request request) {
-    switch (request.method) {
-      case 'POST':
-        return create(request);
-        break;
-      case 'GET':
-        return get(request);
-      case 'PUT':
-        return put(request);
-      default:
-        return Response(418, {}, {'short': 'stout'});
+  FutureOr<RequestOrResponse> delete(Request request) async {
+    final id = request.path.variables['id'];
+    final token = request.raw.headers.value('Token');
+
+    if (id == null) {
+      return Response.badRequest();
     }
+    final users = HiveUtils.users;
+    final user = await users.get(id);
+
+    if (user == null) {
+      return Response.notFound();
+    }
+
+    if (user.token != token)
+      return Response.forbidden();
+
+    await user.delete();
+    return Response.ok(null);
   }
+
 }

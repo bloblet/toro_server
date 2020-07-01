@@ -24,11 +24,18 @@ class Stock {
   @HiveField(2)
   String name;
 
+  @JsonKey(includeIfNull: false)
+  int quantity;
+
+  @JsonKey(required: true)
   double get open => _open ??= Hive.box<Map<DateTime, double>>('openHistory')
       .get(symbol)[floor(DateTime.now())];
 
+  @JsonKey(required: true)
   double get change => _change ??= price - open;
-  double get changePercentage => _changePercentage ??= change / open;
+
+  @JsonKey(required: true)
+  double get changePercentage => _changePercentage ??= 100 * (change / open);
 
   static Stock fromJson(Map<String, dynamic> json) => _$StockFromJson(json);
 

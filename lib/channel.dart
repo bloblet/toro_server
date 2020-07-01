@@ -1,6 +1,7 @@
 import 'package:toro_server/middleware/keyCheck.dart';
 
 import 'routes/user.dart';
+import 'routes/user.stocks.dart';
 import 'toro_server.dart';
 
 /// This type initializes an application.
@@ -44,9 +45,10 @@ class ToroServerChannel extends ApplicationChannel {
 
     Hive.registerAdapter(UserAdapter());
     Hive.registerAdapter(StockAdapter());
+    Hive.registerAdapter(PortfolioChangeEventAdapter());
     Hive.init('hive');
     HiveUtils.users = await Hive.openLazyBox('users');
-    await Hive.openBox('stocks');
+    HiveUtils.stocks = await Hive.openBox('stocks');
 
     stopwatch.stop();
     info('Done initializing!   $bold(${stopwatch.elapsedMilliseconds}ms)');
@@ -64,7 +66,7 @@ class ToroServerChannel extends ApplicationChannel {
 
     // See: https://aqueduct.io/docs/http/request_controller/
     UserRouter().setup(router);
-
+    StocksRouter().setup(router);
     return router;
   }
 }
