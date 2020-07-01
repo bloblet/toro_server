@@ -22,13 +22,14 @@ class UserAdapter extends TypeAdapter<User> {
       ..stocks = (fields[2] as List)?.cast<Stock>()
       ..watchedStocks = (fields[3] as List)?.cast<String>()
       ..balance = fields[4] as double
-      ..email = fields[5] as String;
+      ..email = fields[5] as String
+      ..username = fields[6] as String;
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,6 +42,8 @@ class UserAdapter extends TypeAdapter<User> {
       ..write(obj.balance)
       ..writeByte(5)
       ..write(obj.email);
+      ..writeByte(6)
+      ..write(obj.username);
   }
 }
 
@@ -58,8 +61,9 @@ User _$UserFromJson(Map<String, dynamic> json) {
         ?.toList()
     ..watchedStocks =
         (json['watchedStocks'] as List)?.map((e) => e as String)?.toList()
-    ..balance = (json['balance'] as num)?.toDouble()
-    ..email = json['email'] as String;
+    ..balance = (json['balance'] as num).toDouble()
+    ..email = json['email'] as String
+    ..username = json['username'] as String;
 }
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -69,4 +73,5 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'watchedStocks': instance.watchedStocks,
       'balance': instance.balance,
       'email': instance.email,
+      'username': instance.username
     };

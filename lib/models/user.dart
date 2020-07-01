@@ -24,5 +24,8 @@ class User extends HiveObject {
   @HiveField(5)
   String email; // OPTIONAL
 
+  @HiveField(5)
+  String username;
+  
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
