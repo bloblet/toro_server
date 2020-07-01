@@ -11,7 +11,7 @@ Future main() async {
   const count = 4;
   await app.start(numberOfInstances: count);
 
-  fine('Using $count instances');
-  info("Application started on port: ${app.options.port}.");
-  info("Use Ctrl-C (SIGINT) to stop running the application.");
+  print('Using $count instances');
+  print("Application started on port: ${app.options.port}.");
+  print("Use Ctrl-C (SIGINT) to stop running the application.");
 }
