@@ -56,48 +56,6 @@
       "languageVersion": "2.6"
     },
     {
-      "name": "build_daemon",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/build_daemon-2.1.4",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
-      "name": "build_resolvers",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/build_resolvers-1.3.9",
-      "packageUri": "lib/",
-      "languageVersion": "2.7"
-    },
-    {
-      "name": "build_runner",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/build_runner-1.10.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
-      "name": "build_runner_core",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/build_runner_core-5.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.7"
-    },
-    {
-      "name": "built_collection",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/built_collection-4.3.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
-      "name": "built_value",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/built_value-7.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.3"
-    },
-    {
-      "name": "characters",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/characters-0.3.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.5"
-    },
-    {
       "name": "charcode",
       "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.3",
       "packageUri": "lib/",
@@ -114,12 +72,6 @@
       "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/codable-1.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
-    },
-    {
-      "name": "code_builder",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/code_builder-3.3.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
     },
     {
       "name": "collection",
@@ -158,38 +110,14 @@
       "languageVersion": "2.7"
     },
     {
-      "name": "dartx",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/dartx-0.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
-      "name": "fixnum",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/fixnum-0.10.11",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
-    },
-    {
       "name": "glob",
       "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/glob-1.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
-      "name": "graphs",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/graphs-0.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.0"
-    },
-    {
       "name": "hive",
       "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/hive-1.4.1+1",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
-      "name": "hive_generator",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/hive_generator-0.7.0+2",
       "packageUri": "lib/",
       "languageVersion": "2.6"
     },
@@ -356,12 +284,6 @@
       "languageVersion": "2.2"
     },
     {
-      "name": "quiver",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/quiver-2.0.5",
-      "packageUri": "lib/",
-      "languageVersion": "2.0"
-    },
-    {
       "name": "safe_config",
       "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/safe_config-2.0.2",
       "packageUri": "lib/",
@@ -428,12 +350,6 @@
       "languageVersion": "2.0"
     },
     {
-      "name": "stream_transform",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/stream_transform-1.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
       "name": "string_scanner",
       "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.0.5",
       "packageUri": "lib/",
@@ -462,18 +378,6 @@
       "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/test_core-0.3.9",
       "packageUri": "lib/",
       "languageVersion": "2.7"
-    },
-    {
-      "name": "time",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/time-1.3.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
-      "name": "timing",
-      "rootUri": "file:///home/matthewfrancis/.pub-cache/hosted/pub.dartlang.org/timing-0.1.1+2",
-      "packageUri": "lib/",
-      "languageVersion": "2.2"
     },
     {
       "name": "typed_data",
@@ -524,7 +428,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2020-07-01T00:11:44.234087Z",
+  "generated": "2020-07-01T00:48:53.569938Z",
   "generator": "pub",
   "generatorVersion": "2.8.4"
 }

@@ -17,6 +17,6 @@ dependencies:
 dev_dependencies:
   test: ^1.0.0
   aqueduct_test: ^1.0.0
-  hive_generator: ^0.7.0+2
-  build_runner: ^1.10.0
+  # hive_generator: ^0.7.0+2
+  # build_runner: ^1.10.0
   json_serializable: ^3.2.0

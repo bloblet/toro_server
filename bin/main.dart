@@ -7,7 +7,8 @@ Future main() async {
       ..options.configurationFilePath = "config.yaml"
       ..options.port = 8888;
 
-  final count = Platform.numberOfProcessors;
+  // final count = Platform.numberOfProcessors;
+  const count = 4;
   await app.start(numberOfInstances: count);
 
   fine('Using $count instances');
