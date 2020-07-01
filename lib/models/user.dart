@@ -1,6 +1,6 @@
 import '../toro_server.dart';
 
-part 'user.g.dart';
+part 'generated/user.g.dart';
 
 @JsonSerializable(createFactory: true)
 @HiveType(typeId: 0)
@@ -19,7 +19,7 @@ class User extends HiveObject {
 
   @HiveField(4)
   double balance;
-  
+
   @JsonKey(required: false)
   @HiveField(5)
   String email; // OPTIONAL

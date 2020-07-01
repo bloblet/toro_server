@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'stock.dart';
+part of '../stock.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

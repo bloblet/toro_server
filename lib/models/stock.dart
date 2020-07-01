@@ -1,6 +1,6 @@
 import '../toro_server.dart';
 
-part 'stock.g.dart';
+part 'generated/stock.g.dart';
 
 @JsonSerializable(createFactory: true)
 @HiveType(typeId: 1)
@@ -31,6 +31,6 @@ class Stock {
   double get changePercentage => _changePercentage ??= change / open;
 
   static Stock fromJson(Map<String, dynamic> json) => _$StockFromJson(json);
-  
+
   Map<String, dynamic> toJson() => _$StockToJson(this);
 }
