@@ -41,7 +41,7 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(4)
       ..write(obj.balance)
       ..writeByte(5)
-      ..write(obj.email);
+      ..write(obj.email)
       ..writeByte(6)
       ..write(obj.username);
   }
