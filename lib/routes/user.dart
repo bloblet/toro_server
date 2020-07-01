@@ -27,12 +27,12 @@ class UserRouter extends Controller implements SubRouter {
   }
 
   FutureOr<RequestOrResponse> create(Request request) async {
-    if (request.body.contentType != ContentType.json || request.body.isEmpty) {
+    if (request.body.isEmpty) {
       return Response.badRequest();
     }
     final body = await request.body.decode<Map>();
 
-    if (body['username'] == null || (body['username'] as String).length > 32) {
+    if (!body.containsKey('username') || (body['username'] as String).length > 32) {
       return Response.badRequest();
     }
 
