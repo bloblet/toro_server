@@ -114,6 +114,7 @@ Future<void> getMarket(String market) async {
 }
 
 Future<void> main() async {
+  Hive.init('hive');
   final now = DateTime.now();
 
   HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
