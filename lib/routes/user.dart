@@ -26,32 +26,26 @@ class UserRouter extends Controller implements SubRouter {
         .link(() => this);
   }
 
-  FutureOr<RequestOrResponse> create(Request request) async {
-    assert(request.method == 'POST');
+  // FutureOr<RequestOrResponse> create(Request request) async {
+  //   assert(request.method == 'POST');
 
-    final users = HiveUtils.users;
+  //   final users = HiveUtils.users;
 
-    final id = uuidGenerator.v4();
-    final user = User()
-      ..balance = 25000
-      ..id = id
-      ..stocks = []
-      ..token = Randomizer.next()
-      ..watchedStocks = [];
+  //   final id = uuidGenerator.v4();
+  //   final user = User()
+  //     ..balance = 25000
+  //     ..id = id
+  //     ..stocks = []
+  //     ..token = Randomizer.next()
+  //     ..watchedStocks = [];
 
-    unawaited(users.put(id, user));
+  //   unawaited(users.put(id, user));
 
-    return Response.created(id, body: user.toJson());
-  }
+  //   return Response.created(id, body: user.toJson());
+  // }
 
   @override
   FutureOr<RequestOrResponse> handle(Request request) {
-    switch (request.method) {
-      case 'POST':
-        return create(request);
-        break;
-      default:
-        return Response.notFound();
-    }
+    return Response.ok({'Yay:': 'Indeed'});
   }
 }
