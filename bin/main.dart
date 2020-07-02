@@ -7,7 +7,7 @@ Future main() async {
     ..options.port = 8888;
 
   // final count = Platform.numberOfProcessors;
-  const count = 2;
+  const count = 4;
   await app.start(numberOfInstances: count);
   print('Using $count instances');
 

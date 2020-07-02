@@ -6,7 +6,7 @@ class StocksRouter extends RouterTemplate implements SubRouter {
   @override
   void setup(Router router) {
     router
-        .route('/users/:id/stocks/[:symbol]/[:quantity]')
+        .route('/users/:id/stocks[/:symbol/[:quantity]]')
         .link(() => KeyCheckController())
         .link(() => StocksRouter());
   }

@@ -15,4 +15,8 @@ class PortfolioChangeEvent {
   Map<String, int> portfolioChange;
 
   double get change => newBalance - oldBalance;
+
+  static PortfolioChangeEvent fromJson(Map<String, dynamic> json) => _$PortfolioChangeEventFromJson(json);
+  Map<String, dynamic> toJson(PortfolioChangeEvent instance) => _$PortfolioChangeEventToJson(instance);
+
 }
