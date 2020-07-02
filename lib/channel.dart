@@ -1,5 +1,4 @@
-import 'package:toro_server/middleware/keyCheck.dart';
-import 'package:firebase/firebase.dart';
+// import 'package:firebase/firebase.dart';
 
 import 'routes/user.dart';
 import 'routes/user.stocks.dart';
@@ -19,14 +18,14 @@ class ToroServerChannel extends ApplicationChannel {
   ///
   /// This method is invoked prior to [entryPoint] being accessed.
 
-  static Future initializeApplication() async {
-    initializeApp(
-        apiKey: "YourApiKey",
-        authDomain: "YourAuthDomain",
-        databaseURL: "YourDatabaseUrl",
-        projectId: "YourProjectId",
-        storageBucket: "YourStorageBucket");
-  }
+  // static Future initializeApplication() async {
+  //   initializeApp(
+  //       apiKey: "YourApiKey",
+  //       authDomain: "YourAuthDomain",
+  //       databaseURL: "YourDatabaseUrl",
+  //       projectId: "YourProjectId",
+  //       storageBucket: "YourStorageBucket");
+  // }
 
   @override
   Future prepare() async {

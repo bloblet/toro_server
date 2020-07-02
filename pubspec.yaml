@@ -12,9 +12,9 @@ dependencies:
   json_annotation: ^3.0.1
   uuid: ^2.1.0
   firebase: ^7.3.0
-
   meta: ^1.1.8
-
+  http: ^0.12.1
+  
 dev_dependencies:
   test: ^1.0.0
   aqueduct_test: ^1.0.0
