@@ -7,7 +7,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  # aqueduct: 3.3.0+1
+  aqueduct: 3.3.0+1
   hive: ^1.4.1+1
   json_annotation: ^3.0.1
   uuid: ^2.1.0
@@ -18,6 +18,6 @@ dependencies:
 dev_dependencies:
   test: ^1.0.0
   aqueduct_test: ^1.0.0
-  hive_generator: ^0.7.0+2
-  build_runner: ^1.10.0
+  # hive_generator: ^0.7.0+2
+  # build_runner: ^1.10.0
   json_serializable: ^3.2.0
