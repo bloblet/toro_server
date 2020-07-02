@@ -1,6 +1,6 @@
 import '../toro_server.dart';
 
-part 'generated/portfolio_change_event.g.dart';
+part 'portfolio_change_event.g.dart';
 
 @HiveType(typeId: 2)
 @JsonSerializable()

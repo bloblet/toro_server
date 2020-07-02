@@ -1,6 +1,6 @@
 import '../toro_server.dart';
 
-part 'generated/user.g.dart';
+part 'user.g.dart';
 
 @JsonSerializable(createFactory: true)
 @HiveType(typeId: 0)
