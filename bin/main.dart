@@ -1,11 +1,10 @@
 import 'package:toro_server/toro_server.dart';
 
 Future main() async {
-
+  Logger.root.level = Level.FINEST;
   final app = Application<ToroServerChannel>()
-      ..logger.level = Level.FINEST
-      ..options.configurationFilePath = "config.yaml"
-      ..options.port = 8888;
+    ..options.configurationFilePath = "config.yaml"
+    ..options.port = 80;
 
   // final count = Platform.numberOfProcessors;
   const count = 4;

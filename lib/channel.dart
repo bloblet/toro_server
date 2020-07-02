@@ -1,6 +1,7 @@
 import 'package:toro_server/middleware/keyCheck.dart';
 
 import 'routes/user.dart';
+import 'routes/user.stocks.dart';
 import 'toro_server.dart';
 
 /// This type initializes an application.
@@ -8,44 +9,6 @@ import 'toro_server.dart';
 /// Override methods in this class to set up routes and initialize services like
 /// database connections. See http://aqueduct.io/docs/http/channel/.
 class ToroServerChannel extends ApplicationChannel {
-  static void init() {
-    ToroServerChannel.addStartupHook(() {
-      Hive.registerAdapter(UserAdapter());
-    });
-
-    ToroServerChannel.addStartupHook(() {
-      Hive.registerAdapter(StockAdapter());
-    });
-
-    ToroServerChannel.addStartupHook(() {
-      Hive.init('hive');
-    });
-
-    ToroServerChannel.addStartupHook(() async {
-      await Hive.openLazyBox('users');
-    });
-
-    ToroServerChannel.addStartupHook(() async {
-      await Hive.openBox('stocks');
-    });
-  }
-
-  static final List<Function()> _startupHooks = [];
-
-  static void addStartupHook(Function() hook) {
-    _startupHooks.add(() => hook);
-  }
-
-  static Future initializeApplication(ApplicationOptions options) async {
-    init();
-
-    final stopwatch = Stopwatch()..start();
-    for (final item in _startupHooks) {
-      await item();
-    }
-    stopwatch.stop();
-    print('$infoColor$bold[INFO]$reset ${infoColor}Done initializing!   $bold(${stopwatch.elapsedMilliseconds}ms)$reset');
-  }
 
   /// Initialize services in this method.
   ///
@@ -55,33 +18,40 @@ class ToroServerChannel extends ApplicationChannel {
   /// This method is invoked prior to [entryPoint] being accessed.
   @override
   Future prepare() async {
-    logger.onRecord.listen(
-        (rec) {
-          if (rec.level == Level.INFO) {
-            print('$infoColor$bold[INFO]$reset $infoColor${rec.message}$reset');
-          }
-          else if (rec.level == Level.WARNING) {
-            print('$warningColor$bold[WARNING]$reset $warningColor${rec.message}$reset');
-          }
-          else if (rec.level == Level.SHOUT) {
-            print('$shoutColor$bold[SHOUT]$reset $shoutColor${rec.message}$reset');
-          }
-          else if (rec.level == Level.SEVERE) {
-            print('$severeColor$bold[SEVERE]$reset $severeColor${rec.message}$reset');
-          }
-          else if (rec.level == Level.CONFIG) {
-            print('$configColor$bold[CONFIG]$reset $configColor${rec.message}$reset');
-          }
-          else if (rec.level == Level.FINE) {
-            print('$fineColor$bold[FINE]$reset ${rec.message}');
-          }
-          else if (rec.level == Level.FINER) {
-            print('$finerColor$bold[INFO]$reset ${rec.message}');
-          }
-          else if (rec.level == Level.FINEST) {
-            print('$finestColor$bold[INFO]$reset ${rec.message}');
-          }
-        });
+    logger.onRecord.listen((rec) {
+      if (rec.level == Level.INFO) {
+        print('$infoColor$bold[INFO]$reset $infoColor${rec.message}$reset');
+      } else if (rec.level == Level.WARNING) {
+        print(
+            '$warningColor$bold[WARNING]$reset $warningColor${rec.message}$reset');
+      } else if (rec.level == Level.SHOUT) {
+        print('$shoutColor$bold[SHOUT]$reset $shoutColor${rec.message}$reset');
+      } else if (rec.level == Level.SEVERE) {
+        print(
+            '$severeColor$bold[SEVERE]$reset $severeColor${rec.message}$reset');
+      } else if (rec.level == Level.CONFIG) {
+        print(
+            '$configColor$bold[CONFIG]$reset $configColor${rec.message}$reset');
+      } else if (rec.level == Level.FINE) {
+        print('$fineColor$bold[FINE]$reset ${rec.message}');
+      } else if (rec.level == Level.FINER) {
+        print('$finerColor$bold[INFO]$reset ${rec.message}');
+      } else if (rec.level == Level.FINEST) {
+        print('$finestColor$bold[INFO]$reset ${rec.message}');
+      }
+    });
+
+    final stopwatch = Stopwatch()..start();
+
+    Hive.registerAdapter(UserAdapter());
+    Hive.registerAdapter(StockAdapter());
+    Hive.registerAdapter(PortfolioChangeEventAdapter());
+    Hive.init('hive');
+    HiveUtils.users = await Hive.openLazyBox('users');
+    HiveUtils.stocks = await Hive.openBox('stocks');
+
+    stopwatch.stop();
+    info('Done initializing!   $bold(${stopwatch.elapsedMilliseconds}ms)');
   }
 
   /// Construct the request channel.
@@ -96,7 +66,7 @@ class ToroServerChannel extends ApplicationChannel {
 
     // See: https://aqueduct.io/docs/http/request_controller/
     UserRouter().setup(router);
-
+    StocksRouter().setup(router);
     return router;
   }
 }

@@ -18,6 +18,7 @@ export 'dateUtils.dart';
 export 'hiveUtils.dart';
 export 'logUtils.dart';
 export 'middleware/keyCheck.dart';
+export 'models/portfolio_change_event.dart';
 export 'models/stock.dart';
 export 'models/subRouter.dart';
 export 'models/user.dart';

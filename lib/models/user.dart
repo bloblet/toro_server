@@ -1,6 +1,6 @@
 import '../toro_server.dart';
 
-part 'generated/user.g.dart';
+part 'user.g.dart';
 
 @JsonSerializable(createFactory: true)
 @HiveType(typeId: 0)
@@ -12,7 +12,8 @@ class User extends HiveObject {
   String token;
 
   @HiveField(2)
-  List<Stock> stocks;
+  //  Symbol, Quantity
+  Map<String, int> stocks;
 
   @HiveField(3)
   List<String> watchedStocks;
@@ -24,6 +25,11 @@ class User extends HiveObject {
   @HiveField(5)
   String email; // OPTIONAL
 
+  @HiveField(6)
+  String username;
+
+  @HiveField(7)
+  Map<DateTime, PortfolioChangeEvent> portfolioChanges;
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
