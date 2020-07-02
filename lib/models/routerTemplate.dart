@@ -20,14 +20,12 @@ class RouterTemplate extends Controller {
   FutureOr<RequestOrResponse> _run(
       FutureOr<RequestOrResponse> Function(Request) function,
       Request request) async {
-    RequestOrResponse res;
     try {
-      res = await function(request);
+      return await function(request);
     } catch (exception, trace) {
       severe('Request headers: ${request.raw.headers} \nRequest Body: ${await request.body.decode()}: \nRequest IP: ${request.connectionInfo.remoteAddress} \nPath: ${request.path.string} \nMethod: ${request.method} \nContent Length: ${request.raw.contentLength} \nE: $exception, \nTrace: $trace');
       rethrow;
     }
-    return res;
   }
 
   @override

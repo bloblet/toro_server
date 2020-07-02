@@ -49,78 +49,78 @@ class UserRouter extends RouterTemplate implements SubRouter {
       ..watchedStocks = []
       ..username = body['username'] as String;
 
-    //   unawaited(users.put(id, user));
+    unawaited(users.put(id, user));
 
-    //   return Response.created(id, body: user.toJson());
-    // }
+    return Response.created(id, body: user.toJson());
+  }
 
-    FutureOr<RequestOrResponse> put(Request request) async {
-      final id = request.path.variables['id'];
-      final token = request.raw.headers.value('Token');
+  FutureOr<RequestOrResponse> put(Request request) async {
+    final id = request.path.variables['id'];
+    final token = request.raw.headers.value('Token');
 
-      if (id == null) {
-        return Response.badRequest();
-      }
-      final user = await HiveUtils.users.get(id);
+    if (id == null) {
+      return Response.badRequest();
+    }
+    final user = await HiveUtils.users.get(id);
 
-      if (user == null) {
-        return Response.notFound();
-      }
-
-      if (user.token != token) {
-        return Response.unauthorized();
-      }
-
-      if (request.body.isEmpty) {
-        return Response.badRequest();
-      }
-      final body = await request.body.decode<Map>();
-
-      if (body.containsKey('username'))
-        user.username = body['username'] as String;
-
-      unawaited(user.save());
-
-      return Response.ok(user.toJson());
+    if (user == null) {
+      return Response.notFound();
     }
 
-    FutureOr<RequestOrResponse> get(Request request) async {
-      final id = request.path.variables['id'];
-      final token = request.raw.headers.value('Token');
-
-      if (id == null) {
-        return Response.badRequest();
-      }
-      final users = HiveUtils.users;
-      final user = await users.get(id);
-
-      if (user == null) {
-        return Response.notFound();
-      }
-
-      return Response.ok(user.toJson()
-        ..removeWhere((key, value) =>
-            (key == 'token' || key == 'email') && token != user.token));
+    if (user.token != token) {
+      return Response.unauthorized();
     }
 
-    FutureOr<RequestOrResponse> delete(Request request) async {
-      final id = request.path.variables['id'];
-      final token = request.raw.headers.value('Token');
-
-      if (id == null) {
-        return Response.badRequest();
-      }
-      final users = HiveUtils.users;
-      final user = await users.get(id);
-
-      if (user == null) {
-        return Response.notFound();
-      }
-
-      if (user.token != token) return Response.forbidden();
-
-      await user.delete();
-      return Response.ok(null);
+    if (request.body.isEmpty) {
+      return Response.badRequest();
     }
+    final body = await request.body.decode<Map>();
+
+    if (body.containsKey('username'))
+      user.username = body['username'] as String;
+
+    unawaited(user.save());
+
+    return Response.ok(user.toJson());
+  }
+
+  FutureOr<RequestOrResponse> get(Request request) async {
+    final id = request.path.variables['id'];
+    final token = request.raw.headers.value('Token');
+
+    if (id == null) {
+      return Response.badRequest();
+    }
+    final users = HiveUtils.users;
+    final user = await users.get(id);
+
+    if (user == null) {
+      return Response.notFound();
+    }
+
+    return Response.ok(user.toJson()
+      ..removeWhere((key, value) =>
+          (key == 'token' || key == 'email') && token != user.token));
+  }
+
+  FutureOr<RequestOrResponse> delete(Request request) async {
+    final id = request.path.variables['id'];
+    final token = request.raw.headers.value('Token');
+
+    if (id == null) {
+      return Response.badRequest();
+    }
+    final users = HiveUtils.users;
+    final user = await users.get(id);
+
+    if (user == null) {
+      return Response.notFound();
+    }
+
+    if (user.token != token)
+      return Response.forbidden();
+
+    await user.delete();
+    return Response.ok(null);
   }
 }
