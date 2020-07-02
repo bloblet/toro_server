@@ -1,6 +1,6 @@
 import 'package:toro_server/toro_server.dart';
 
-Future run() async {
+Future main() async {
   Logger.root.level = Level.FINEST;
   final app = Application<ToroServerChannel>()
     ..options.configurationFilePath = "config.yaml"
@@ -12,10 +12,4 @@ Future run() async {
 
   print("Application started on port: ${app.options.port}.");
   print("Use Ctrl-C (SIGINT) to stop running the application.");
-}
-
-void main() {
-  runZonedGuarded(run, (_,__) {
-    severe('E: $_, Trace: $__');
-  });
 }
