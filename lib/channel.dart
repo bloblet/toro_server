@@ -58,8 +58,11 @@ class ToroServerChannel extends ApplicationChannel {
     Hive.registerAdapter(StockAdapter());
     Hive.registerAdapter(PortfolioChangeEventAdapter());
     Hive.init('hive');
+
     HiveUtils.users = await Hive.openLazyBox('users');
+    HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
     HiveUtils.stocks = await Hive.openBox('stocks');
+    HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
 
     stopwatch.stop();
     info('Done initializing!   $bold(${stopwatch.elapsedMilliseconds}ms)');

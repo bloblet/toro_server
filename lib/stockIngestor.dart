@@ -1,3 +1,6 @@
+import 'package:http/http.dart';
+
+import 'toro_server.dart';
 
 const markets = [
   'etf',
@@ -10,7 +13,7 @@ const markets = [
   'nasdaq'
 ];
 
-final apiKeys = [
+final List<String> apiKeys = [
   'c51500d1341f6a12ddfe9557245a778a',
   '2942ba41afb6ea2462042c241be29779',
   '450d8d7b1aa2427893080a4915c58342',
@@ -44,3 +47,93 @@ final apiKeys = [
   'bb7ea7026feff9cd6e38497d3c08e6ec'
 ];
 
+const endpoint = 'https://onesignal.com/api/v1/notifications';
+const key = '';
+
+class Notification {
+  final String userID;
+  final Stock stock;
+
+  Notification({@required this.userID, @required this.stock});
+}
+
+class Notifications {
+  static const _appID = '';
+
+  static Future<void> send(Notification notification) async {
+    final Map<String, dynamic> req = {};
+    req['include_external_user_ids'] = [notification.userID];
+    req['app_id'] = _appID;
+    req['contents'] = {
+      'en': '${notification.stock.symbol} is at ${notification.stock.price}!'
+    };
+    req['headings'] = {'en': 'Stock price alert'};
+    req['data'] = {'stock': notification.stock.toJson()};
+    req['buttons'] = [
+      {'id': 'buy', 'text': 'Buy 1'},
+      {'id': 'sell', 'text': 'Sell 1'}
+    ];
+    await post(endpoint, body: jsonEncode(req), headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Authorization': 'Basic $key'
+    });
+  }
+}
+
+
+final List<Map<String, Stock>> gottenMarkets = [];
+const stockUrl = 'https://fmpcloud.io/api/v3/quotes/{market}?apikey=';
+
+Future<void> getMarket(String market) async {
+  dynamic response;
+  while (stockUrl == stockUrl) {
+    final apiKey = apiKeys.first;
+
+    if (apiKeys.isEmpty) {
+      // TODO
+    }
+
+    response = jsonDecode(
+        (await get('$stockUrl$apiKey'.replaceFirst('{market}', market))).body);
+
+    try {
+      final error = response['Error Message'];
+      apiKeys.remove(apiKey);
+    } catch (_, __) {
+      break;
+    }
+  }
+
+  final Map<String, Stock> stocks = {};
+
+  for (Map<String, dynamic> stock in response as List<Map<String, dynamic>>) {
+    stocks[stock['symbol'] as String] = Stock.fromJson(stock);
+  }
+
+  gottenMarkets.add(stocks);
+}
+
+Future<void> main() async {
+  final now = DateTime.now();
+
+  HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
+  HiveUtils.stocks = await Hive.openBox('stocks');
+  HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
+
+  final Map<String, double> buffer = {};
+
+  HiveUtils.stocks.toMap().forEach((symbol, stock) {
+    buffer[symbol as String] = stock.price;
+  });
+
+  for (String market in markets) {
+    unawaited(getMarket(market).then((_) {
+      if (gottenMarkets.length == markets.length) {
+        unawaited(HiveUtils.history.put(now, buffer));
+        unawaited(HiveUtils.stocks.clear());
+
+        gottenMarkets.forEach((buffer) => HiveUtils.stocks.putAll(buffer));
+      }
+    }));
+  }
+}
