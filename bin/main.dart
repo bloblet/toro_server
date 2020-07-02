@@ -4,7 +4,7 @@ Future main() async {
   Logger.root.level = Level.FINEST;
   final app = Application<ToroServerChannel>()
     ..options.configurationFilePath = "config.yaml"
-    ..options.port = 8888;
+    ..options.port = 80;
 
   // final count = Platform.numberOfProcessors;
   const count = 4;
