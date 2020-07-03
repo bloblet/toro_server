@@ -80,7 +80,6 @@ class Notifications {
   }
 }
 
-
 final List<Map<String, Stock>> gottenMarkets = [];
 const stockUrl = 'https://fmpcloud.io/api/v3/quotes/{market}?apikey=';
 
@@ -106,8 +105,9 @@ Future<void> getMarket(String market) async {
 
   final Map<String, Stock> stocks = {};
 
-  for (Map<String, dynamic> stock in response as List<Map<String, dynamic>>) {
-    stocks[stock['symbol'] as String] = Stock.fromJson(stock);
+  for (dynamic stock in response) {
+    stocks[stock['symbol'] as String] =
+        Stock.fromJson(stock as Map<String, dynamic>);
   }
 
   gottenMarkets.add(stocks);
@@ -115,6 +115,8 @@ Future<void> getMarket(String market) async {
 
 Future<void> main() async {
   Hive.init('hive');
+  Hive.registerAdapter(UserAdapter());
+  Hive.registerAdapter(StockAdapter());
   final now = DateTime.now();
 
   HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
@@ -128,13 +130,41 @@ Future<void> main() async {
   });
 
   for (String market in markets) {
-    unawaited(getMarket(market).then((_) {
+    unawaited(getMarket(market).then((_) async {
       if (gottenMarkets.length == markets.length) {
-        unawaited(HiveUtils.history.put(now, buffer));
-        unawaited(HiveUtils.stocks.clear());
+        final nowtime = floorTo15Minutes(now);
 
-        gottenMarkets.forEach((buffer) => HiveUtils.stocks.putAll(buffer));
+        start = DateTime.now();
+        await lock();
+
+        HiveUtils.history.put(nowtime, buffer).then(isDone);
+        HiveUtils.stocks.clear().then(isDone);
+
+        gottenMarkets
+            .forEach((buffer) => HiveUtils.stocks.putAll(buffer).then(isDone));
       }
     }));
   }
+}
+
+DateTime start;
+final done = [];
+
+void isDone(_) {
+  done.add(_);
+
+  if (done.length == gottenMarkets.length + 2) {
+    unlock();
+    final end = DateTime.now();
+    print('Done!');
+    print('Took ${end.difference(start).inMilliseconds}ms');
+  }
+}
+
+Future<void> lock() async {
+  await get('http://localhost:8888/lock');
+}
+
+Future<void> unlock() async {
+  await get('http://localhost:8888/unlock');
 }

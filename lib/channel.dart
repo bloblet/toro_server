@@ -11,24 +11,39 @@ import 'toro_server.dart';
 ///
 
 class ToroServerChannel extends ApplicationChannel {
+
+  Future<void> openBoxes() async {
+    Hive.registerAdapter(UserAdapter());
+    Hive.registerAdapter(StockAdapter());
+    Hive.registerAdapter(PortfolioChangeEventAdapter());
+    Hive.init('hive');
+
+    HiveUtils.users = await Hive.openLazyBox('users');
+    HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
+    HiveUtils.stocks = await Hive.openBox('stocks');
+    HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
+  }
+
   /// Initialize services in this method.
   ///
   /// Implement this method to initialize services, read values from [options]
   /// and any other initialization required before constructing [entryPoint].
   ///
   /// This method is invoked prior to [entryPoint] being accessed.
-
-  // static Future initializeApplication() async {
-  //   initializeApp(
-  //       apiKey: "YourApiKey",
-  //       authDomain: "YourAuthDomain",
-  //       databaseURL: "YourDatabaseUrl",
-  //       projectId: "YourProjectId",
-  //       storageBucket: "YourStorageBucket");
-  // }
-
   @override
   Future prepare() async {
+    messageHub.listen((event) async {
+      if (event is Map && event["t"] == "unlock") {
+        isLocked = false;
+        await openBoxes();
+        lock.add('');
+      } else if (event is Map && event["t"] == "lock") {
+        lock = StreamController();
+        isLocked = true;
+        await Hive.close();
+      }
+    });
+
     logger.onRecord.listen((rec) {
       if (rec.level == Level.INFO) {
         print('$infoColor$bold[INFO]$reset $infoColor${rec.message}$reset');
@@ -54,19 +69,14 @@ class ToroServerChannel extends ApplicationChannel {
 
     final stopwatch = Stopwatch()..start();
 
-    Hive.registerAdapter(UserAdapter());
-    Hive.registerAdapter(StockAdapter());
-    Hive.registerAdapter(PortfolioChangeEventAdapter());
-    Hive.init('hive');
 
-    HiveUtils.users = await Hive.openLazyBox('users');
-    HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
-    HiveUtils.stocks = await Hive.openBox('stocks');
-    HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
 
     stopwatch.stop();
     info('Done initializing!   $bold(${stopwatch.elapsedMilliseconds}ms)');
   }
+
+  bool isLocked = false;
+  StreamController lock;
 
   /// Construct the request channel.
   ///
@@ -77,6 +87,30 @@ class ToroServerChannel extends ApplicationChannel {
   @override
   Controller get entryPoint {
     final router = Router();
+    router.linkFunction((request) async {
+      if (isLocked) {
+        await lock.stream.first;
+      }
+      return request;
+    });
+
+    router.route('/lock').linkFunction((request) {
+      if (request.connectionInfo.remoteAddress.address == 'localhost') {
+        messageHub.add({'t': 'lock'});
+        return Response.ok(null);
+      } else {
+        return Response.notFound();
+      }
+    });
+
+    router.route('/unlock').linkFunction((request) {
+      if (request.connectionInfo.remoteAddress.address == 'localhost') {
+        messageHub.add({'t': 'unlock'});
+        return Response.ok(null);
+      } else {
+        return Response.notFound();
+      }
+    });
 
     // See: https://aqueduct.io/docs/http/request_controller/
     UserRouter().setup(router);

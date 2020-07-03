@@ -4,11 +4,11 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-       {
-           "name": "Dart: Attach to Process",
-           "type": "dart",
-           "request": "attach",
-        //    "observatoryUri": "http://127.0.0.1:38369/2Ma0nVz1fOU=/"
-       }
+        {
+            "name": "Dart: Current file",
+            "type": "dart",
+            "request": "launch",
+            "program": "$file"
+        }
     ]
 }
