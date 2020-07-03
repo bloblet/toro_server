@@ -4,7 +4,7 @@ Future main() async {
   Logger.root.level = Level.FINEST;
   final app = Application<ToroServerChannel>()
     ..options.configurationFilePath = "config.yaml"
-    ..options.port = 80;
+    ..options.port = 8888;
 
   const count = 4;
   await app.start(numberOfInstances: count);
