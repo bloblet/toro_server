@@ -14,7 +14,14 @@ dependencies:
   firebase: ^7.3.0
   meta: ^1.1.8
   http: ^0.12.1
-  
+  toro_models:
+    git:
+      url: git@github.com:bloblet/toro_models.git
+      ref: developer # CHANGE THIS WHEN RELEASING!!!!!
+  fuzzy: ^0.2.3
+  pedantic: ^1.9.2
+
+  body_parser: ^1.1.1
 dev_dependencies:
   test: ^1.0.0
   aqueduct_test: ^1.0.0

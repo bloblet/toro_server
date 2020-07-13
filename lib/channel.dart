@@ -3,6 +3,7 @@
 import 'routes/user.dart';
 import 'routes/user.stocks.dart';
 import 'toro_server.dart';
+import 'routes/user.avatar.dart';
 
 /// This type initializes an application.
 ///
@@ -13,15 +14,13 @@ import 'toro_server.dart';
 class ToroServerChannel extends ApplicationChannel {
 
   Future<void> openBoxes() async {
-    Hive.registerAdapter(UserAdapter());
-    Hive.registerAdapter(StockAdapter());
-    Hive.registerAdapter(PortfolioChangeEventAdapter());
     Hive.init('hive');
 
     HiveUtils.users = await Hive.openLazyBox('users');
     HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
     HiveUtils.stocks = await Hive.openBox('stocks');
     HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
+    HiveUtils.usernames = await Hive.openBox<String>('usernames');
   }
 
   /// Initialize services in this method.
@@ -68,8 +67,13 @@ class ToroServerChannel extends ApplicationChannel {
     });
 
     final stopwatch = Stopwatch()..start();
+    Hive.registerAdapter(StockAdapter());
+    Hive.registerAdapter(UserAdapter());
+    Hive.registerAdapter(PortfolioChangeEventAdapter());
+    Hive.registerAdapter(UserSettingsAdapter());
 
-
+    await openBoxes();
+    await Search().init();
 
     stopwatch.stop();
     info('Done initializing!   $bold(${stopwatch.elapsedMilliseconds}ms)');
@@ -87,7 +91,7 @@ class ToroServerChannel extends ApplicationChannel {
   @override
   Controller get entryPoint {
     final router = Router();
-    router.linkFunction((request) async {
+    router.route('*').linkFunction((request) async {
       if (isLocked) {
         await lock.stream.first;
       }
@@ -115,6 +119,8 @@ class ToroServerChannel extends ApplicationChannel {
     // See: https://aqueduct.io/docs/http/request_controller/
     UserRouter().setup(router);
     StocksRouter().setup(router);
+    AvatarRouter().setup(router);
+
     return router;
   }
 }

@@ -8,4 +8,6 @@ class HiveUtils {
   static LazyBox<Map<String, double>> history;
 
   static Box<List<String>> watchedStocks;
+
+  static Box<String> usernames;
 }

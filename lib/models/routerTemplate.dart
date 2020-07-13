@@ -17,6 +17,14 @@ class RouterTemplate extends Controller {
     return Response(418, {}, {'short': 'stout'});
   }
 
+  FutureOr<RequestOrResponse> head(Request request) async {
+    return Response(418, {}, {'short': 'stout'});
+  }
+
+  FutureOr<RequestOrResponse> options(Request request) async {
+    return Response(418, {}, {'short': 'stout'});
+  }
+
   FutureOr<RequestOrResponse> _run(
       FutureOr<RequestOrResponse> Function(Request) function,
       Request request) async {
@@ -40,6 +48,10 @@ class RouterTemplate extends Controller {
         return _run(put, request);
       case 'DELETE':
         return _run(delete, request);
+      case 'HEAD':
+        return _run(head, request);
+      case 'OPTIONS':
+        return _run(options, request);
       default:
         return Response(418, {}, {'short': 'stout'});
     }
