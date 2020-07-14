@@ -27,7 +27,5 @@ class FriendsRouter extends RouterTemplate implements SubRouter {
     if (user.token != token) {
       return Response.forbidden();
     }
-
-  
   }
 }

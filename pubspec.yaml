@@ -20,6 +20,8 @@ dependencies:
       ref: developer # CHANGE THIS WHEN RELEASING!!!!!
   fuzzy: ^0.2.3
   pedantic: ^1.9.2
+  blurhash_dart: ^0.2.3
+  image: ^2.1.14
 
   body_parser: ^1.1.1
 dev_dependencies:
