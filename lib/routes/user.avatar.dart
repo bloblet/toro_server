@@ -1,5 +1,5 @@
 import 'package:blurhash_dart/blurhash_dart.dart';
-import 'package:image/image.dart' as img;
+import 'package:image/image.dart';
 
 import '../models/routerTemplate.dart';
 import '../toro_server.dart';
@@ -16,10 +16,10 @@ class AvatarRouter extends RouterTemplate implements SubRouter {
   @override
   Future<RequestOrResponse> post(Request request) async {
     final body = await request.raw.asBroadcastStream().single;
-    img.Image image = img.decodeImage(body);
+    Image image = decodeImage(body);
 
     final blurHash = encodeBlurHash(
-      image.getBytes(format: img.Format.rgba),
+      image.getBytes(format: Format.rgba),
       image.width,
       image.height,
     );
