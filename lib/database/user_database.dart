@@ -56,7 +56,8 @@ class UserDatabase {
     final id = _uuidGenerator.v4();
 
     final user = User()
-      ..friends = []
+      ..followers = []
+      ..following = []
       ..settings = UserSettings()
       ..discriminator = discriminator
       ..balance = startingBalance
@@ -110,15 +111,16 @@ class UserDatabase {
         File.fromUri(Uri(path: '$root/avatar.sum')).writeAsString(blurHash));
   }
 
-  Future<List<Map<String, dynamic>>> getFollowers(String id, {int start = 0, int end = 50}) async {
+  Future<List<Map<String, dynamic>>> getFollowers(String id,
+      {int start = 0, int end = 50}) async {
     final user = await getUserByID(id);
     final List<Map<String, dynamic>> followers = [];
     int startIndex = 0;
     int endIndex = 50;
-    if (start >= 0 && start < user.friends.length) {
+    if (start >= 0 && start < user.followers.length) {
       startIndex = start;
     }
-    if (end < user.friends.length) {
+    if (end < user.followers.length) {
       endIndex = end;
     }
 
@@ -126,25 +128,31 @@ class UserDatabase {
       endIndex = startIndex + 100;
     }
 
-    if (endIndex >= user.friends.length) {
-      endIndex = user.friends.length - 1;
+    if (endIndex >= user.followers.length) {
+      endIndex = user.followers.length - 1;
     }
 
-    for (String id
-        in user.friends.sublist(startIndex, endIndex)) {
-      followers.add(Follower.fromJson((await getUserByID(id)).toJson()).toJson());
+    for (String id in user.followers.sublist(startIndex, endIndex)) {
+      followers
+          .add(Follower.fromJson((await getUserByID(id)).toJson()).toJson());
     }
 
     return followers;
   }
 
   Future<void> follow(User user, User target) async {
-    user.friends.add(target.id);
-    await user.save();
+    if (!target.settings.acceptingFollowers) {
+      throw UserNotAcceptingFollowers();
+    }
+
+    if (!user.following.contains(target.id) && user.id != target.id) {
+      user.following.add(target.id);
+      await user.save();
+    }
   }
 
   Future<void> unfollow(User user, User target) async {
-    user.friends.remove(target.id);
+    user.following.remove(target.id);
     await user.save();
   }
 
@@ -153,11 +161,14 @@ class UserDatabase {
     final List<Map<String, dynamic>> usersJson = [];
 
     for (final result in results) {
-      final user = await HiveUtils.users.get(result.item);
+      final user = await users.get(result.item);
       usersJson.add({'username': user.username, 'worth': user.balance});
     }
     return usersJson;
   }
+
+
 }
 
 class NoMoreDiscriminators implements Exception {}
+class UserNotAcceptingFollowers implements Exception {}

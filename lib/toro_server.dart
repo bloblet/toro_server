@@ -16,6 +16,7 @@ export 'package:pedantic/pedantic.dart';
 
 export 'channel.dart';
 export 'constants.dart';
+export 'database/stock_database.dart';
 export 'database/user_database.dart';
 export 'middleware/keyCheck.dart';
 export 'models/subRouter.dart';

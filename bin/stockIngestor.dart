@@ -90,6 +90,7 @@ Future<void> getMarket(String market) async {
 
     if (apiKeys.isEmpty) {
       // TODO
+      print("WARNING!!! API KEYS ARE GONE!!!");
     }
 
     response = jsonDecode(
@@ -119,25 +120,24 @@ Future<void> main() async {
   Hive.registerAdapter(StockAdapter());
   final now = DateTime.now();
 
-  await lock();
-  HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
-  HiveUtils.stocks = await Hive.openBox('stocks');
-  HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
-
-  final Map<String, double> buffer = {};
-
-  HiveUtils.stocks.toMap().forEach((symbol, stock) {
-    buffer[symbol as String] = stock.price;
-  });
-
   for (String market in markets) {
     unawaited(getMarket(market).then((_) async {
       if (gottenMarkets.length == markets.length) {
-        final nowtime = floorTo15Minutes(now).millisecondsSinceEpoch.toString();
-
         start = DateTime.now();
 
+        await lock();
+        HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
+        HiveUtils.stocks = await Hive.openBox('stocks');
+        HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
 
+        final Map<String, double> buffer = {};
+
+        HiveUtils.stocks.toMap().forEach((symbol, stock) {
+          buffer[symbol as String] = stock.price;
+        });
+
+        final nowtime = floorTo15Minutes(now).toIso8601String();
+        
         HiveUtils.history.put(nowtime, buffer).then(isDone);
         HiveUtils.stocks.clear().then(isDone);
 
@@ -163,9 +163,11 @@ void isDone(_) {
 }
 
 Future<void> lock() async {
+  print('Locked!');
   await get('http://localhost:8888/lock');
 }
 
 Future<void> unlock() async {
+  print('Unlocked!');
   await get('http://localhost:8888/unlock');
 }

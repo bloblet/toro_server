@@ -1,12 +1,10 @@
-// import 'package:firebase/firebase.dart';
-
-import 'package:toro_server/routes/user.follow.dart';
-import 'package:toro_server/routes/user.search.dart';
-
+import 'routes/stocks.dart';
+import 'routes/user.avatar.dart';
 import 'routes/user.dart';
+import 'routes/user.follow.dart';
+import 'routes/user.search.dart';
 import 'routes/user.stocks.dart';
 import 'toro_server.dart';
-import 'routes/user.avatar.dart';
 
 /// This type initializes an application.
 ///
@@ -15,15 +13,20 @@ import 'routes/user.avatar.dart';
 ///
 
 class ToroServerChannel extends ApplicationChannel {
-
   Future<void> openBoxes() async {
-    Hive.init('hive');
+    print("initing users");
 
     HiveUtils.users = await Hive.openLazyBox('users');
+    print("initing history");
+
     HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
+    print("initing stocks");
     HiveUtils.stocks = await Hive.openBox('stocks');
+    print("initing watchedstocks");
     HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
+    print("initing usernames");
     HiveUtils.usernames = await Hive.openBox<String>('usernames');
+    print('done!');
   }
 
   /// Initialize services in this method.
@@ -36,10 +39,13 @@ class ToroServerChannel extends ApplicationChannel {
   Future prepare() async {
     messageHub.listen((event) async {
       if (event is Map && event["t"] == "unlock") {
-        isLocked = false;
+        print('Unlocking!');
         await openBoxes();
+        isLocked = false;
         lock.add('');
       } else if (event is Map && event["t"] == "lock") {
+        print(Hive.isBoxOpen('stocks'));
+        print('Locking!');
         lock = StreamController();
         isLocked = true;
         await Hive.close();
@@ -74,6 +80,7 @@ class ToroServerChannel extends ApplicationChannel {
     Hive.registerAdapter(UserAdapter());
     Hive.registerAdapter(PortfolioChangeEventAdapter());
     Hive.registerAdapter(UserSettingsAdapter());
+    Hive.init('hive');
 
     await openBoxes();
     await Search().init();
@@ -101,21 +108,29 @@ class ToroServerChannel extends ApplicationChannel {
       return request;
     });
 
-    router.route('/lock').linkFunction((request) {
+    router.route('/lock').linkFunction((request) async {
       // if (request.connectionInfo.remoteAddress.address == 'localhost') {
-        messageHub.add({'t': 'lock'});
-        return Response.ok(null);
+      print('Locking!');
+      lock = StreamController();
+      isLocked = true;
+      await Hive.close();
+      messageHub.add({'t': 'lock'});
+
+      return Response.ok(null);
       // } else {
-        // return Response.notFound();
+      // return Response.notFound();
       //}
     });
 
-    router.route('/unlock').linkFunction((request) {
+    router.route('/unlock').linkFunction((request) async {
       // if (request.connectionInfo.remoteAddress.address == 'localhost') {
-        messageHub.add({'t': 'unlock'});
-        return Response.ok(null);
+      messageHub.add({'t': 'unlock'});
+      await openBoxes();
+        isLocked = false;
+        lock.add('');
+      return Response.ok(null);
       // } else {
-        // return Response.notFound();
+      // return Response.notFound();
       // }
     });
 
@@ -125,7 +140,7 @@ class ToroServerChannel extends ApplicationChannel {
     AvatarRouter().setup(router);
     FollowersRouter().setup(router);
     UserSearchRouter().setup(router);
-    
+    StockRouter().setup(router);
     return router;
   }
 }

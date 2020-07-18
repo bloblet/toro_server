@@ -510,10 +510,10 @@ packages:
     description:
       path: "."
       ref: developer
-      resolved-ref: "5ce25d0596b2a6e4c7d98aac83783eecd44a7802"
+      resolved-ref: "525c4e07a92bb4ea884ff40082f00fa22197cbad"
       url: "git@github.com:bloblet/toro_models.git"
     source: git
-    version: "0.5.3"
+    version: "0.6.0"
   typed_data:
     dependency: transitive
     description:

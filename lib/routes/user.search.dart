@@ -6,7 +6,7 @@ class UserSearchRouter extends RouterTemplate implements SubRouter {
   @override
   void setup(Router router) {
     router
-        .route('/users/:username')
+        .route('/users/search/:username')
         .link(() => KeyCheckController())
         .link(() => UserSearchRouter());
   }
