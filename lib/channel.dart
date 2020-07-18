@@ -99,21 +99,21 @@ class ToroServerChannel extends ApplicationChannel {
     });
 
     router.route('/lock').linkFunction((request) {
-      if (request.connectionInfo.remoteAddress.address == 'localhost') {
+      // if (request.connectionInfo.remoteAddress.address == 'localhost') {
         messageHub.add({'t': 'lock'});
         return Response.ok(null);
-      } else {
-        return Response.notFound();
-      }
+      // } else {
+        // return Response.notFound();
+      //}
     });
 
     router.route('/unlock').linkFunction((request) {
-      if (request.connectionInfo.remoteAddress.address == 'localhost') {
+      // if (request.connectionInfo.remoteAddress.address == 'localhost') {
         messageHub.add({'t': 'unlock'});
         return Response.ok(null);
-      } else {
-        return Response.notFound();
-      }
+      // } else {
+        // return Response.notFound();
+      // }
     });
 
     // See: https://aqueduct.io/docs/http/request_controller/
