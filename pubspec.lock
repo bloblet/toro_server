@@ -196,7 +196,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.1"
+    version: "0.12.2"
   http_multi_server:
     dependency: transitive
     description:
@@ -510,7 +510,7 @@ packages:
     description:
       path: "."
       ref: developer
-      resolved-ref: b1fc0f39319fdf549e8e91de41b47586f7523af6
+      resolved-ref: "0587f9be1799fd65c94f8ddc7d9e6d7f515e46c1"
       url: "git@github.com:bloblet/toro_models.git"
     source: git
     version: "0.5.2"

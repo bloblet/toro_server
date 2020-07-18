@@ -1,8 +1,11 @@
 import 'dart:math';
 
+import 'package:blurhash_dart/blurhash_dart.dart';
+import 'package:image/image.dart';
 import 'package:uuid/uuid.dart';
 
 import '../toro_server.dart';
+
 const maxDiscriminatorValue = 10000;
 const double startingBalance = 25000;
 
@@ -34,7 +37,8 @@ class UserDatabase {
 
   /// Creates a new User
   Future<User> create(Future<String> Function() username) async {
-    int discriminator = _discriminatorGenerator.nextInt(maxDiscriminatorValue) - 1;
+    int discriminator =
+        _discriminatorGenerator.nextInt(maxDiscriminatorValue) - 1;
     int i = 0;
 
     while (usernames.get('$username#$discriminator') != null) {
@@ -43,10 +47,12 @@ class UserDatabase {
         throw NoMoreDiscriminators();
       }
 
-      discriminator = _discriminatorGenerator.nextInt(maxDiscriminatorValue) - 1;
+      discriminator =
+          _discriminatorGenerator.nextInt(maxDiscriminatorValue) - 1;
     }
 
-    final token = const Base64Encoder.urlSafe().convert(List<int>.generate(32, (i) => _random.nextInt(256)));
+    final token = const Base64Encoder.urlSafe()
+        .convert(List<int>.generate(32, (i) => _random.nextInt(256)));
     final id = _uuidGenerator.v4();
 
     final user = User()
@@ -83,6 +89,26 @@ class UserDatabase {
     unawaited(user.delete());
   }
 
+  Future<void> setAvatar(Image image, String id) async {
+    final root = '/etc/toro/avatars/${id}';
+
+    final blurHash = encodeBlurHash(
+      image.getBytes(format: Format.rgba),
+      image.width,
+      image.height,
+    );
+
+    final userAvatarDirectory = Directory.fromUri(Uri(path: root));
+    if (!userAvatarDirectory.existsSync()) {
+      userAvatarDirectory.createSync();
+    }
+
+    unawaited(File.fromUri(
+      Uri(path: '$root/avatar.png'),
+    ).writeAsBytes(image.getBytes()));
+    unawaited(
+        File.fromUri(Uri(path: '$root/avatar.sum')).writeAsString(blurHash));
+  }
 }
 
 class NoMoreDiscriminators implements Exception {}
