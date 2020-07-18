@@ -1,23 +1,7 @@
-import 'dart:math';
-
 import '../models/routerTemplate.dart';
-import 'package:uuid/uuid.dart';
-
 import '../toro_server.dart';
 
-class Randomizer {
-  static final Random _random = Random.secure();
-
-  static String next([int length = 32]) {
-    var values = List<int>.generate(length, (i) => _random.nextInt(256));
-
-    return const Base64Encoder.urlSafe().convert(values);
-  }
-}
-
 class UserRouter extends RouterTemplate implements SubRouter {
-  final _uuidGenerator = Uuid();
-
   @override
   void setup(Router router) {
     router
@@ -26,42 +10,77 @@ class UserRouter extends RouterTemplate implements SubRouter {
         .link(() => this);
   }
 
+  /// ## POST
+  ///
+  /// ### Use: Creates a new user
+  ///
+  /// ### Fail conditions:
+  ///
+  /// - Body is empty (`400`)
+  /// - Username key isnt in body (`400`)
+  /// - Username > 32 characters (`400`)
+  /// - No more discriminators (`410`)
+  ///
+  /// ### Success:
+  /// - Status: `201` created
+  /// - Body: User JSON
+  /// - Headers: Location header as user ID
+  @override
   FutureOr<RequestOrResponse> post(Request request) async {
     if (request.body.isEmpty) {
       return Response.badRequest();
     }
-    final body = await request.body.decode<Map>();
 
-    if (!body.containsKey('username') ||
-        (body['username'] as String).length > 32) {
+    User user;
+
+    try {
+      user = await UserDatabase().create(() async {
+        final body = await request.body.decode<Map>();
+
+        if (!body.containsKey('username') ||
+            (body['username'] as String).length > 32) {
+          throw InvalidBody();
+        }
+
+        return body['username'] as String;
+      });
+    } on NoMoreDiscriminators {
+      return Response.gone();
+    } on InvalidBody {
       return Response.badRequest();
     }
 
-    final id = _uuidGenerator.v4();
-    final users = HiveUtils.users;
-
-    final user = User()
-      ..balance = 25000
-      ..id = id
-      ..stocks = {}
-      ..portfolioChanges = {}
-      ..token = Randomizer.next()
-      ..watchedStocks = []
-      ..username = body['username'] as String;
-
-    unawaited(users.put(id, user));
-
-    return Response.created(id, body: user.toJson());
+    return Response.created(user.id, body: user.toJson());
   }
 
+  /// ## PUT
+  ///
+  /// ### Use: Edits a user
+  ///
+  /// ### Fail conditions:
+  ///
+  /// - Body is empty (`400`)
+  /// - Username > 32 characters (`400`)
+  /// - No more discriminators (`410`)
+  /// - User does not exist (`404`)
+  /// - Body does not contain username (`400`)
+  /// 
+  /// ### Success:
+  /// `200` OK
+  @override
   FutureOr<RequestOrResponse> put(Request request) async {
+    if (request.body.isEmpty) {
+      return Response.badRequest();
+    }
+
     final id = request.path.variables['id'];
     final token = request.raw.headers.value('Token');
 
     if (id == null) {
       return Response.badRequest();
     }
-    final user = await HiveUtils.users.get(id);
+
+    final user = await UserDatabase().getUserByID(id);
 
     if (user == null) {
       return Response.notFound();
@@ -71,19 +90,24 @@ class UserRouter extends RouterTemplate implements SubRouter {
       return Response.unauthorized();
     }
 
-    if (request.body.isEmpty) {
-      return Response.badRequest();
-    }
     final body = await request.body.decode<Map>();
 
-    if (body.containsKey('username'))
-      user.username = body['username'] as String;
+    if (!body.containsKey('username')) {
+      return Response.badRequest();
+    }
 
-    unawaited(user.save());
+    unawaited(UserDatabase().changeUsername(body['username'] as String, user));
 
     return Response.ok(user.toJson());
   }
 
+  /// Fail conditions:
+  ///
+  /// No id (400)
+  /// No such user (404)
+  ///
+  /// Sucess: 200 OK
+  @override
   FutureOr<RequestOrResponse> get(Request request) async {
     final id = request.path.variables['id'];
     final token = request.raw.headers.value('Token');
@@ -91,8 +115,7 @@ class UserRouter extends RouterTemplate implements SubRouter {
     if (id == null) {
       return Response.badRequest();
     }
-    final users = HiveUtils.users;
-    final user = await users.get(id);
+    final user = await UserDatabase().getUserByID(id);
 
     if (user == null) {
       return Response.notFound();
@@ -103,6 +126,14 @@ class UserRouter extends RouterTemplate implements SubRouter {
           (key == 'token' || key == 'email') && token != user.token));
   }
 
+  /// Fail conditions:
+  ///
+  /// No id (400)
+  /// No such user (404)
+  /// Invalid token (403)
+  ///
+  /// Sucess: 200 OK
+  @override
   FutureOr<RequestOrResponse> delete(Request request) async {
     final id = request.path.variables['id'];
     final token = request.raw.headers.value('Token');
@@ -110,17 +141,20 @@ class UserRouter extends RouterTemplate implements SubRouter {
     if (id == null) {
       return Response.badRequest();
     }
-    final users = HiveUtils.users;
-    final user = await users.get(id);
+    final user = await UserDatabase().getUserByID(id);
 
     if (user == null) {
       return Response.notFound();
     }
 
-    if (user.token != token)
+    if (user.token != token) {
       return Response.forbidden();
+    }
 
-    await user.delete();
+    unawaited(UserDatabase().deleteUser(user));
+
     return Response.ok(null);
   }
 }
+
+class InvalidBody implements Exception {}
