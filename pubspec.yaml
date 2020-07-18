@@ -1,6 +1,6 @@
 name: toro_server
 description: Backend server for Toro
-version: 0.0.1
+version: 0.1.0
 author: piesquared|GreedyVagabond
 
 environment:
@@ -22,8 +22,8 @@ dependencies:
   pedantic: ^1.9.2
   blurhash_dart: ^0.2.3
   image: ^2.1.14
-
   body_parser: ^1.1.1
+
 dev_dependencies:
   test: ^1.0.0
   aqueduct_test: ^1.0.0
