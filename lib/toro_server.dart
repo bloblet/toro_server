@@ -16,9 +16,10 @@ export 'package:pedantic/pedantic.dart';
 
 export 'channel.dart';
 export 'constants.dart';
-export 'dateUtils.dart';
-export 'hiveUtils.dart';
-export 'logUtils.dart';
+export 'database/user_database.dart';
 export 'middleware/keyCheck.dart';
 export 'models/subRouter.dart';
-export 'searchUtils.dart';
+export 'tools/dateUtils.dart';
+export 'tools/hiveUtils.dart';
+export 'tools/logUtils.dart';
+export 'tools/searchUtils.dart';
