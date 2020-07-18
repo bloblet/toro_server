@@ -15,7 +15,7 @@ class StocksRouter extends RouterTemplate implements SubRouter {
   FutureOr<RequestOrResponse> post(Request request) async {
     // Get variables from the request
     // This if is at the top because we dont need anything else to check this, so for performance
-    // we should check it before we do uneeded things.
+    // we should check it before we do unneeded things.
     final quantity = int.tryParse(request.path.variables['quantity']);
     if (quantity <= 0) {
       return Response.badRequest();
@@ -37,11 +37,7 @@ class StocksRouter extends RouterTemplate implements SubRouter {
     }
 
     final user = await HiveUtils.users.get(id);
-    if (user == null) {
-      return Response.notFound();
-    }
-
-    if (user.token != token) {
+    if (user == null || user.token != token) {
       return Response.notFound();
     }
 
@@ -49,24 +45,19 @@ class StocksRouter extends RouterTemplate implements SubRouter {
       return Response.badRequest();
     }
 
-    // Adds it to their portfolio
     if (user.stocks.containsKey(symbol)) {
       user.stocks[symbol] += quantity;
     } else {
       user.stocks[symbol] = quantity;
     }
 
-    // We log whenever a user's portfolio changes
     final changeEvent = PortfolioChangeEvent()..oldBalance = user.balance ..portfolioChange = {symbol: quantity};
     user.balance -= stock.price * quantity;
     changeEvent.newBalance = user.balance;
 
     user.portfolioChanges[DateTime.now()] = changeEvent;
 
-    // Save.  This doesnt need to be awaited, since it can finish whenever.
     unawaited(user.save());
-
-    // To avoid making another request to get the portfolio, we can return it right here.
     final stocks = {};
 
     user.stocks.forEach((symbol, quantity) {

@@ -1,5 +1,8 @@
 // import 'package:firebase/firebase.dart';
 
+import 'package:toro_server/routes/user.follow.dart';
+import 'package:toro_server/routes/user.search.dart';
+
 import 'routes/user.dart';
 import 'routes/user.stocks.dart';
 import 'toro_server.dart';
@@ -120,7 +123,9 @@ class ToroServerChannel extends ApplicationChannel {
     UserRouter().setup(router);
     StocksRouter().setup(router);
     AvatarRouter().setup(router);
-
+    FollowersRouter().setup(router);
+    UserSearchRouter().setup(router);
+    
     return router;
   }
 }

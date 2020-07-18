@@ -109,6 +109,55 @@ class UserDatabase {
     unawaited(
         File.fromUri(Uri(path: '$root/avatar.sum')).writeAsString(blurHash));
   }
+
+  Future<List<Map<String, dynamic>>> getFollowers(String id, {int start = 0, int end = 50}) async {
+    final user = await getUserByID(id);
+    final List<Map<String, dynamic>> followers = [];
+    int startIndex = 0;
+    int endIndex = 50;
+    if (start >= 0 && start < user.friends.length) {
+      startIndex = start;
+    }
+    if (end < user.friends.length) {
+      endIndex = end;
+    }
+
+    if (endIndex - startIndex > 100) {
+      endIndex = startIndex + 100;
+    }
+
+    if (endIndex >= user.friends.length) {
+      endIndex = user.friends.length - 1;
+    }
+
+    for (String id
+        in user.friends.sublist(startIndex, endIndex)) {
+      followers.add(Follower.fromJson((await getUserByID(id)).toJson()).toJson());
+    }
+
+    return followers;
+  }
+
+  Future<void> follow(User user, User target) async {
+    user.friends.add(target.id);
+    await user.save();
+  }
+
+  Future<void> unfollow(User user, User target) async {
+    user.friends.remove(target.id);
+    await user.save();
+  }
+
+  Future<List<Map<String, dynamic>>> search(String username) async {
+    final results = Search().users.search(username, 50);
+    final List<Map<String, dynamic>> usersJson = [];
+
+    for (final result in results) {
+      final user = await HiveUtils.users.get(result.item);
+      usersJson.add({'username': user.username, 'worth': user.balance});
+    }
+    return usersJson;
+  }
 }
 
 class NoMoreDiscriminators implements Exception {}
