@@ -48,7 +48,7 @@ class ToroServerChannel extends ApplicationChannel {
         print('Locking!');
         lock = StreamController();
         isLocked = true;
-        await Hive.close();
+        // await Hive.close();
       }
     });
 

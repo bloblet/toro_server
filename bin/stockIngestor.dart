@@ -126,9 +126,11 @@ Future<void> main() async {
         start = DateTime.now();
 
         await lock();
-        HiveUtils.history = await Hive.openLazyBox<Map<String, double>>('history');
+        HiveUtils.history =
+            await Hive.openLazyBox<Map<String, double>>('history');
         HiveUtils.stocks = await Hive.openBox('stocks');
-        HiveUtils.watchedStocks = await Hive.openBox<List<String>>('watchedStocks');
+        HiveUtils.watchedStocks =
+            await Hive.openBox<List<String>>('watchedStocks');
 
         final Map<String, double> buffer = {};
 
@@ -137,7 +139,7 @@ Future<void> main() async {
         });
 
         final nowtime = floorTo15Minutes(now).toIso8601String();
-        
+
         HiveUtils.history.put(nowtime, buffer).then(isDone);
         HiveUtils.stocks.clear().then(isDone);
 
@@ -155,6 +157,7 @@ void isDone(_) {
   done.add(_);
 
   if (done.length == gottenMarkets.length + 2) {
+    Hive.close();
     unlock();
     final end = DateTime.now();
     print('Done!');
@@ -164,10 +167,18 @@ void isDone(_) {
 
 Future<void> lock() async {
   print('Locked!');
-  await get('http://localhost:8888/lock');
+  try {
+    await get('http://localhost:8888/lock');
+  } on SocketException {
+    print("Warning, server is down!");
+  }
 }
 
 Future<void> unlock() async {
   print('Unlocked!');
-  await get('http://localhost:8888/unlock');
+  try {
+    await get('http://localhost:8888/unlock');
+  } on SocketException {
+    print("Warning, server is down!");
+  }
 }
